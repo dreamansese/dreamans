@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>CentOS下iptables设置_Dreamans's Blog</title>
+    <meta name="keywords" content="Linux提供了一个非常优秀的防火墙工具iptables,本文简单介绍iptables的安装使用..." />
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+    <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+    <script src="../javascripts/scale.fix.js"></script>
+    <script src="../javascripts/jquery.js"></script>
+    <script src="../javascripts/common.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Dreamans</h1>
+        <p class="header">A PHP Programmer</p>
+
+        <ul>
+          <li><a class="buttons github" href="http://dreamans.com">Home</a></li>
+        </ul>
+      </header>
+      <section>
+      <h3 class="title">CentOS下iptables设置 <i>2012.09.21 | Post by dreamans in BJ | <a href="#disqus_thread">Comment</a></i></h3>
+<p>
+
+安装iptables
+<pre>
+$ sudo yum install iptables
+</pre>
+
+清除现有规则
+<pre>
+$ sudo iptables -F        清除预设表filter中的所有规则链的规则
+$ sudo iptables -X        清除预设表filter中使用者自定链中的规则
+</pre>
+
+保存规则修改
+<pre>
+$ sudo service iptables save
+</pre>
+
+查看规则
+<pre>
+$ sudo iptables -L -n --line-number
+    -n 只显示IP地址和端口号，不将ip解析为域名
+    -x 在 v 的基础上，禁止自动单位换算（K、M）
+    -v 显示详细信息，包括每条规则的匹配包数量和匹配字节数
+    --line-number 显示行号
+</pre>
+
+设定预设规则
+<pre>
+$ sudo iptables -p INPUT DROP
+$ sudo iptables -p OUTPUT ACCEPT
+$ sudo iptables -p FORWARD DROP
+说明：当超出了iptables的fliter表里的规则(INPUT,FORWARD)时进行DROP(放弃)处理,对于OUTPUT进行ACCEPT处理.
+</pre>
+
+添加规则
+<pre>
+1.开启ssh所需的22端口：
+$ sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+2.开启80端口：
+$ sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+
+3.开启25 110 21 53端口等同上
+
+4.允许icmp包通过,允许ping 服务器
+$ sudo iptables -A OUTPUT -p icmp -j ACCEPT
+$ sudo iptables -A INPUT -p icmp -j ACCEPT
+
+5.允许lookback
+$ sudo iptables -A INPUT -i lo -p all -j ACCEPT
+$ sudo iptables -A OUTPUT -o lo -p all -j ACCEPT
+
+6.减少不安全端口
+$ sudo iptables -A OUTPUT -p tcp --sport 31337 -j DROP
+$ sudo iptables -A OUTPUT -p tcp --dport 31337 -j DROP
+
+7.对相应IP进行规则限制
+    
+    只允许指定IP进行ssh连接:
+    $ sudo iptables -A INPUT -s IP地址 -p tcp --dport 22 -j ACCEPT
+    注意要删除/etc/sysconfig/iptables里的这条记录 -A INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+
+    屏蔽IP:
+    屏蔽单个IP的命令是
+    $ sudo iptables -I INPUT -s 123.45.6.7 -j DROP
+    封整个段即从123.0.0.1到123.255.255.254的命令
+    $ sudo iptables -I INPUT -s 123.0.0.0/8 -j DROP
+    封IP段即从123.45.0.1到123.45.255.254的命令
+    $ sudo iptables -I INPUT -s 124.45.0.0/16 -j DROP
+    封IP段即从123.45.6.1到123.45.6.254的命令是
+    $ sudo iptables -I INPUT -s 123.45.6.0/24 -j DROP
+
+8.FORWARD规则有时间再进行总结.
+</pre>
+
+删除规则
+<pre>
+$ sudo iptables -D INPUT(OUTPUT/FORWARD) 行号
+</pre>
+
+开机自启动
+<pre>
+$ sudo chkconfig --level 345 iptables on
+</pre>
+本文引用地址：http://dreamans.com/post/3.html
+</p>
+
+        <h3>Comments</h3>
+        <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+    </section>
+
+<script type="text/javascript">
+    var disqus_shortname = 'dreamans';
+    var disqus_identifier = 'http://dreamans.com/post/3.html';
+    var disqus_url = 'http://dreamans.com/post/3.html';
+    var disqus_script = 'embed.js';
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+      <footer>
+      <p><small>Powered on <a href="https://pages.github.com">GitHub Pages</a> Copyright &copy; <a href="http://dreamans.com">dreamans</a></small></p>
+      </footer>
+    </div>
+  <div style="display:none"><script language="javascript" src="../javascripts/tj.js"></script></div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+  </body>
+</html>
