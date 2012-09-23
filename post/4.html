@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Linux Nginx PHP MySQL 安装笔记_Dreamans's Blog</title>
+    <meta name="keywords" content="Linux Nginx PHP MySQL 安装笔记..." />
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+    <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+    <script src="../javascripts/scale.fix.js"></script>
+    <script src="../javascripts/jquery.js"></script>
+    <script src="../javascripts/common.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Dreamans</h1>
+        <p class="header">A PHP Programmer</p>
+
+        <ul>
+          <li><a class="buttons github" href="http://dreamans.com">Home</a></li>
+        </ul>
+      </header>
+      <section>
+      <h3 class="title">Linux Nginx PHP MySQL安装笔记 <i>2012.09.23 | Post by dreamans in BJ | <a href="#disqus_thread">Comment</a></i></h3>
+<p>
+
+安装必要工具:
+<pre>
+yum install make apr* autoconf automake curl curl-devel gcc gcc-c++ zlib-devel openssl openssl-devel pcre-devel gd  kernel keyutils  patch  perl kernel-headers compat* mpfr cpp glibc libgomp libstdc++-devel ppl cloog-ppl keyutils-libs-devel libcom_err-devel libsepol-devel libselinux-devel krb5-devel zlib-devel libXpm* freetype libjpeg* libpng* php-common php-gd ncurses* libtool* libxml2 libxml2-devel patch
+</pre>
+
+下载软件包:
+<pre>
+https://dreamans.googlecode.com/files/cmake-2.8.7.tar.gz
+https://dreamans.googlecode.com/files/php-5.3.10.tar.gz
+https://dreamans.googlecode.com/files/libmcrypt-2.5.7.tar.gz
+https://dreamans.googlecode.com/files/mysql-5.5.13.tar.gz
+https://dreamans.googlecode.com/files/nginx-1.0.12.tar.gz
+https://dreamans.googlecode.com/files/pcre-8.30.tar.gz
+https://dreamans.googlecode.com/files/phpMyAdmin-3.5.2.2-all-languages.tar.gz
+</pre>
+
+安装libmcrypt:
+<pre>
+# tar zxvf  libmcrypt-2.5.7.tar.gz   #解压
+# cd  libmcrypt-2.5.7 #进入目录
+# ./configure    #配置
+# make           #编译
+# make install   #安装
+</pre>
+
+安装cmake：
+<pre>
+# tar zxvf cmake-2.8.7.tar.gz
+# cd cmake-2.8.7
+# ./configure
+# make           #编译
+# make install   #安装
+</pre>
+
+安装pcre：
+<pre>
+# tar  zxvf pcre-8.30.tar.gz
+# cd pcre-8.30
+# ./configure  –prefix=/usr/local/pcre  #配置
+# make
+# make install
+</pre>
+
+安装MySQL：
+<pre>
+# groupadd  mysql  #添加mysql组
+# useradd -g mysql mysql -s /bin/false  #创建用户mysql并加入到mysql组，不允许mysql用户直接登录系统
+# mkdir -p /data/mysql  #创建MySQL数据库存放目录
+# chown -R mysql:mysql /data/mysql   #设置MySQL数据库目录权限
+# mkdir -p /usr/local/mysql #创建MySQL安装目录
+# tar zxvf mysql-5.5.13.tar.gz  #解压
+# cd mysql-5.5.13
+# cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql  -DMYSQL_DATADIR=/data/mysql  -DSYSCONFDIR=/etc   #配置
+# make #编译
+# make install  #安装
+# cd /usr/local/mysql
+# cp ./support-files/my-huge.cnf  /etc/my.cnf   #拷贝配置文件（注意：如果/etc目录下面默认有一个my.cnf，直接覆盖即可）
+# vi /etc/my.cnf   #编辑配置文件,在 [mysqld] 部分增加
+# datadir = /data/mysql  #添加MySQL数据库路径
+# ./scripts/mysql_install_db –user=mysql  #生成mysql系统数据库
+# cp ./support-files/mysql.server  /etc/rc.d/init.d/mysqld  #把Mysql加入系统启动
+# chmod 755 /etc/init.d/mysqld   #增加执行权限
+# chkconfig mysqld on  #加入开机启动
+# vi /etc/rc.d/init.d/mysqld  #编辑
+# basedir = /usr/local/mysql   #MySQL程序安装路径
+# datadir = /data/mysql  #MySQl数据库存放目录
+# service mysqld start  #启动
+# vi /etc/profile   #把mysql服务加入系统环境变量：在最后添加下面这一行
+# export PATH=$PATH:/usr/local/mysql/bin
+# 下面这两行把myslq的库文件链接到系统默认的位置，这样你在编译类似PHP等软件时可以不用指定mysql的库文件地址。
+# ln -s /usr/local/mysql/lib/mysql /usr/lib/mysql
+# ln -s /usr/local/mysql/include/mysql /usr/include/mysql
+# shutdown -r now     #需要重启系统，等待系统重新启动之后继续在终端命令行下面操作
+# mysql_secure_installation    #设置Mysql密码
+# 根据提示按Y 回车输入2次密码
+# 或者直接修改密码/usr/local/mysql/bin/mysqladmin -u root -p password “123456″ #修改密码
+# service mysqld restart  #重启
+</pre>
+
+安装Nginx：
+<pre>
+# groupadd  www  #添加www组
+# useradd -g  www www -s /bin/false  #创建nginx运行账户www并加入到www组，不允许www用户直接登录系统cd /usr/local/src
+# tar  zxvf nginx-1.0.12.tar.gz
+# cd nginx-1.0.12
+# ./configure –prefix=/usr/local/nginx –user=www –group=www –with-http_stub_status_module –with-openssl=/usr/ –with-pcre=/usr/local/src/pcre-8.30
+# 注意:–with-pcre=/usr/local/src/pcre-8.30指向的是源码包解压的路径，而不是安装的路径，否则会报错
+# make
+# make install
+# /usr/local/nginx/sbin/nginx   #启动nginx
+# 设置nginx开启启动
+# vi /etc/rc.d/init.d/nginx    #编辑启动文件添加下面内容
+</pre>
+
+安装PHP：
+<pre>
+# tar -zvxf php-5.3.10.tar.gz
+# cd  php-5.3.10
+# mkdir -p /usr/local/php  #建立php安装目录
+# ./configure –prefix=/usr/local/php –with-config-file-path=/usr/local/php/etc –with-config-file-scan-dir=/etc/php.d –with-mysql=/usr/local/mysql –with-mysqli=/usr/local/mysql/bin/mysql_config –with-mysql-sock=/tmp/mysql.sock –with-gd –with-iconv  –with-zlib  –enable-xml –enable-magic-quotes –enable-safe-mode –enable-bcmath –enable-shmop –enable-sysvsem –enable-inline-optimization –with-curlwrappers –enable-mbregex  –enable-fpm –enable-mbstring –enable-ftp –enable-gd-native-ttf –with-openssl –enable-pcntl –enable-sockets –with-xmlrpc –enable-zip –enable-soap –without-pear –with-gettext –enable-session –with-mcrypt –with-curl  #配置
+# make   #编译
+# make install    #安装
+# cp  php.ini-production   /usr/local/php/etc/php.ini  #复制php配置文件到安装目录
+# rm -rf /etc/php.ini   #删除系统自带配置文件
+# ln -s /usr/local/php/etc/php.ini  /etc/php.ini    #添加软链接
+# cp  /usr/local/php/etc/php-fpm.conf.default   /usr/local/php/etc/php-fpm.conf    #拷贝模板文件为php-fpm配置文件
+# vi  /usr/local/php/etc/php-fpm.conf  #编辑
+
+user = www    #设置php-fpm运行账号为www
+group = www   #设置php-fpm运行组为www
+pid = run/php-fpm.pid    #取消前面的分号
+设置 php-fpm开机启动
+cp 源码解压目录/php-5.3.10/sapi/fpm/init.d.php-fpm   /etc/rc.d/init.d/php-fpm  #拷贝php-fpm到启动目录
+chmod +x /etc/rc.d/init.d/php-fpm  #添加执行权限
+chkconfig php-fpm on    #设置开机启动
+vi /usr/local/php5/etc/php.ini    #编辑配置文件
+找到：;open_basedir =
+修改为：open_basedir = .:/tmp/   #防止php木马跨站，重要！！
+设置 extension_dir = “/usr/local/php/lib/php/extensions”
+找到：disable_functions =
+修 改为：disable_functions = passthru,exec,system,chroot,scandir,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,escapeshellcmd,dll,popen,disk_free_space,checkdnsrr,checkdnsrr,getservbyname,getservbyport,disk_total_space,posix_ctermid,posix_get_last_error,posix_getcwd, posix_getegid,posix_geteuid,posix_getgid, posix_getgrgid,posix_getgrnam,posix_getgroups,posix_getlogin,posix_getpgid,posix_getpgrp,posix_getpid, posix_getppid,posix_getpwnam,posix_getpwuid, posix_getrlimit, posix_getsid,posix_getuid,posix_isatty, posix_kill,posix_mkfifo,posix_setegid,posix_seteuid,posix_setgid, posix_setpgid,posix_setsid,posix_setuid,posix_strerror,posix_times,posix_ttyname,posix_uname
+#列出PHP可以禁用的函数，如果某些程序需要用到这个函数，可以删除，取消禁用。
+找到：;date.timezone =
+修改为：date.timezone = PRC   #设置时区
+找到：expose_php = On
+修改为：expose_php = OFF  #禁止显示php版本的信息
+找到：display_errors = On
+修改为：display_errors = OFF  #关闭错误提示
+
+vi /usr/local/nginx/conf/nginx.conf
+修改/usr/local/nginx/conf/nginx.conf 配置文件,需做如下修改
+user   www  www;          #首行user去掉注释,修改Nginx运行组为www www；必须与/usr/local/php/etc/php-fpm.conf中的user,group配置相同，否则php运行出错
+</pre>
+本文引用地址：http://dreamans.com/post/4.html
+</p>
+
+        <h3>Comments</h3>
+        <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+    </section>
+
+<script type="text/javascript">
+    var disqus_shortname = 'dreamans';
+    var disqus_identifier = 'http://dreamans.com/post/4.html';
+    var disqus_url = 'http://dreamans.com/post/4.html';
+    var disqus_script = 'embed.js';
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+      <footer>
+      <p><small>Powered on <a href="https://pages.github.com">GitHub Pages</a> Copyright &copy; <a href="http://dreamans.com">dreamans</a></small></p>
+      </footer>
+    </div>
+  <div style="display:none"><script language="javascript" src="../javascripts/tj.js"></script></div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+  </body>
+</html>
