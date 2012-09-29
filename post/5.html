@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Redis命令小结_Dreamans's Blog</title>
+    <meta name="keywords" content="Redis命令" />
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+    <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+    <script src="../javascripts/scale.fix.js"></script>
+    <script src="../javascripts/jquery.js"></script>
+    <script src="../javascripts/common.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Dreamans</h1>
+        <p class="header">A PHP Programmer</p>
+
+        <ul>
+          <li><a class="buttons github" href="http://dreamans.com">Home</a></li>
+        </ul>
+      </header>
+      <section>
+      <h3 class="title">Redis命令小结 <i>2012.09.29 | Post by dreamans in BJ | <a href="#disqus_thread">Comment</a></i></h3>
+<p>
+Emote DIctionary Server(Redis) 是一个由Salvatore Sanfilippo写的key-value存储系统。Redis提供了一些丰富的数据结构，包括 lists, sets, ordered sets 以及 hashes ，当然还有和Memcached一样的 strings结构.Redis当然还包括了对这些数据结构的丰富操作。
+</p>
+<p>
+##String##
+<pre>
+SET key value - 字符串写操作
+GET key - 字符串读操作
+MSET key1 value1 key2 value2 ... - 批量写操作
+MGET key1 value1 key2 value2 ... - 批量读操作
+INCR key - key对应的值自增1
+INCRBY key num - key对应的值自增num
+DECR key - key对应的值自减1
+DECRBY key num - key对应的值自减num
+APPEND key value - 对key对应的值后面加上value 相当于PHP的'.'操作
+STRLEN key - 获取key值长度
+SUBSTR key start end - 截取key值start到end的字符
+</pre>
+##Link##
+
+<pre>
+LPUSH key value - 将value插入到key链表左侧
+LLEN key - key链表长度
+RPUSH key value - 将value插入到key链表右侧
+LRANGE key start stop - 返回指定返回链表值
+LPOP key - Removes and returns the first element of the list stored at key.
+LREM key count value - 删除指定个数的value, count<0从tail向head删,count=0 删除所有,count>0从head向tail删.
+LINSERT key BEFORE|AFTER pivot value - 在pivot之前/后插入value
+LTRIM key start stop - 只保留start到stop之间的值
+</pre>
+
+##Sets##
+<pre>
+SADD key member [member ...] - 增加集合值
+SMEMBERS key  - Returns all the members of the set value stored at key.
+SREM key member [member ...] - Remove the specified members from the set stored at key. 
+SINTER key [key ...] - 交集
+SUNION key [key ...]  - 并集
+SDIFF key [key ...] - 补集
+</pre>
+
+##Sorted Sets##
+<pre>
+ZADD key score member [score] [member] - add
+ZCARD key - Get the number of members in a sorted set
+ZRANGE key start stop - Return a range of members in a sorted set, by index
+ZSCORE key member - Get the score associated with the given member in a sorted set
+ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]  - 
+</pre>
+
+##Hash##
+<pre>
+HKEYS key - Get all the fields in a hash
+HVALS key - Get all the values in a hash
+HGETALL key - Get all the fields and values in a hash
+HDEL key field [field ...] - Delete one or more hash fields
+HMSET key field value [field value ...] - Set multiple hash fields to multiple values
+</pre>
+
+##Others##
+<pre>
+TTL - 数据过期查询
+EXISTS key - Determine if a key exists
+EXPIRE key seconds - Set a key's time to live in seconds
+EXPIREAT key timestamp - Set the expiration for a key as a UNIX timestamp
+
+以NX结尾命令都是判断在这个值没有时才进行某个命令：
+    SETNX key value - Set the value of a key, only if the key does not exist
+    HSETNX key field value - Set the value of a hash field, only if the field does not exist
+    RENAMENX key newkey - Rename a key, only if the new key does not exist
+    MSETNX key value [key value ...] - Set multiple keys to multiple values, only if none of the keys exist
+
+BGSAVE - Asynchronously save the dataset to disk
+SELECT index - Change the selected database for the current connection
+DBSIZE - Return the number of keys in the selected database
+FLUSHDB - Remove all keys from the current database 清空数据库
+</pre>
+
+<pre>
+全部命令 http://redis.io/commands
+</pre>
+
+本文引用地址：http://dreamans.com/post/5.html
+</p>
+
+        <h3>Comments</h3>
+        <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+    </section>
+
+<script type="text/javascript">
+    var disqus_shortname = 'dreamans';
+    var disqus_identifier = 'http://dreamans.com/post/5.html';
+    var disqus_url = 'http://dreamans.com/post/5.html';
+    var disqus_script = 'embed.js';
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+      <footer>
+      <p><small>Powered on <a href="https://pages.github.com">GitHub Pages</a> Copyright &copy; <a href="http://dreamans.com">dreamans</a></small></p>
+      </footer>
+    </div>
+  <div style="display:none"><script language="javascript" src="../javascripts/tj.js"></script></div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+  </body>
+</html>
