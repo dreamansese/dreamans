@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>MySQL备份命令汇总_Dreamans's Blog</title>
+    <meta name="keywords" content="MySQL备份命令" />
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+    <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+    <script src="../javascripts/scale.fix.js"></script>
+    <script src="../javascripts/jquery.js"></script>
+    <script src="../javascripts/common.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Dreamans</h1>
+        <p class="header">A PHP Programmer</p>
+
+        <ul>
+          <li><a class="buttons github" href="http://dreamans.com">Home</a></li>
+        </ul>
+      </header>
+      <section>
+      <h3 class="title">MySQL备份命令汇总 <i>2012.10.08 | Post by dreamans in BJ | <a href="#disqus_thread">Comment</a></i></h3>
+<p>
+MySQL数据库备份语句
+<br/>
+mysql查看表结构命令：
+<pre>
+1.show columns from tablename　| desc tablename  |   describe  tablename
+查看表字段
+
+2.show create table tablename
+各个字段的设置信息
+</pre>
+
+备份：
+<pre>
+1.show processlist; 
+查看当前正在进行的进程，对于有锁表等情况的排查很有用处。
+
+2.show open tables;
+显示当前已经被打开的表列表
+
+3.mysqldump -hhostname -uusername -ppassword databasename &lt; backupfile.sql;
+备份mysql数据库命令
+
+4.mysqldump --add-drop-table -hhostsname -uusername -ppassword databasename &lt; backupfile.sql;
+备份mysql数据库为带删除表的格式，能够让该备份覆盖已有数据库而不需要手动删除原有数据库
+
+5.mysqldump -hhostname -uusername -ppassword databasename | gzip &lt; backupfile.sql.gz;
+直接将mysql数据库压缩备份
+
+6.mysqldump -hhostname -uusername -ppassword database1 database2 database3 &lt; multifile.sql;
+同时备份多个mysql数据库
+
+7.mysqldump -hhostname -uusername -ppassword database1 tablename1 tablename2 tablename3 &lt; multifile.sql;
+同时备份mysql数据库某个（些）表
+
+8.mysqldump --no-data --databases -hhostname -uusername -ppassword databasename1 databasename2 &lt; struct2.sql;
+仅仅备份数据库的结构
+
+9.mysqldump --all-databases -hhostname -uusername -ppassword &lt; backup.sql;
+备份服务器上的所有数据
+</pre>
+
+还原：
+<pre>
+1.mysql -hhostname -uusername -ppassword databasename &lt; backup.sql;
+还原mysql数据库的命令
+
+2.gunzip &lt; backup.sql | mysql -hhostname -uusername -ppassword databasename;
+还原压缩的mysql数据库
+
+3.mysqldump -hhostname -uusername -ppassword databasename | mysql --host=*.*.*.* -C databasename;
+将数据库转移到新的服务器
+</pre>
+</p>
+本文引用地址：http://dreamans.com/post/6.html
+</p>
+
+        <h3>Comments</h3>
+        <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+    </section>
+
+<script type="text/javascript">
+    var disqus_shortname = 'dreamans';
+    var disqus_identifier = 'http://dreamans.com/post/6.html';
+    var disqus_url = 'http://dreamans.com/post/6.html';
+    var disqus_script = 'embed.js';
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+      <footer>
+      <p><small>Powered on <a href="https://pages.github.com">GitHub Pages</a> Copyright &copy; <a href="http://dreamans.com">dreamans</a></small></p>
+      </footer>
+    </div>
+  <div style="display:none"><script language="javascript" src="../javascripts/tj.js"></script></div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+  </body>
+</html>
