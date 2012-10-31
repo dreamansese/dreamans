@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Nginx Rewrite_Dreamans's Blog</title>
+    <meta name="keywords" content="Nginx Rewrite" />
+    <link rel="stylesheet" href="../stylesheets/styles.css">
+    <link rel="stylesheet" href="../stylesheets/pygment_trac.css">
+    <script src="../javascripts/scale.fix.js"></script>
+    <script src="../javascripts/jquery.js"></script>
+    <script src="../javascripts/common.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Dreamans</h1>
+        <p class="header">A PHP Programmer</p>
+
+        <ul>
+          <li><a class="buttons github" href="http://dreamans.com">Home</a></li>
+        </ul>
+      </header>
+      <section>
+      <h3 class="title">Nginx Rewrite <i>2012.10.31 | Post by dreamans in BJ | <a href="#disqus_thread">Comment</a></i></h3>
+<p>
+符号
+<pre>
+    * ~ 为区分大小写匹配
+    * ~* 为不区分大小写匹配
+    * !~和!~*分别为区分大小写不匹配及不区分大小写不匹配
+</pre>
+文件及目录匹配
+<pre>
+    * -f和!-f用来判断是否存在文件
+    * -d和!-d用来判断是否存在目录
+    * -e和!-e用来判断是否存在文件或目录
+    * -x和!-x用来判断文件是否可执行
+</pre>
+flag标记
+<pre>
+    * last 相当于Apache里的[L]标记，表示完成rewrite
+    * break 终止匹配, 不再匹配后面的规则
+    * redirect 返回302临时重定向 地址栏会显示跳转后的地址
+    * permanent 返回301永久重定向 地址栏会显示跳转后的地址
+</pre>
+全局变量
+<pre>
+    $args
+    $content_length
+    $content_type
+    $document_root
+    $document_uri
+    $host
+    $http_user_agent
+    $http_cookie
+    $limit_rate
+    $request_body_file
+    $request_method
+    $remote_addr
+    $remote_port
+    $remote_user
+    $request_filename
+    $request_uri
+    $query_string
+    $scheme
+    $server_protocol
+    $server_addr
+    $server_name
+    $server_port
+    $uri
+</pre>
+一些例子
+<pre>
+    用户使用ie的使用重定向到/nginx-ie目录下
+    if ($http_user_agent ~ MSIE) {
+        rewrite ^(.*)$ /nginx-ie/$1 break;
+    }
+    
+    禁止htaccess
+    location ~//.ht {
+         deny all;
+    }
+
+    禁止多个目录
+    location ~ ^/(cron|templates)/ {
+         deny all;
+        break;
+    }
+    
+    禁止以/data开头的文件
+    location ~ ^/data {
+         deny all;
+    }
+
+    只充许固定ip访问网站，并加上密码
+    root  /opt/htdocs/www;
+    allow   208.97.167.194;
+    allow   222.33.1.2;
+    allow   231.152.49.4;
+    deny    all;
+    auth_basic "C1G_ADMIN";
+    auth_basic_user_file htpasswd;
+    
+    文件和目录不存在的时候重定向
+    if (!-e $request_filename) {
+        proxy_pass http://127.0.0.1;
+    }
+
+</pre>
+</p>
+<p>
+本文引用地址：http://dreamans.com/post/7.html
+</p>
+
+        <h3>Comments</h3>
+        <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript></div>
+    </section>
+
+<script type="text/javascript">
+    var disqus_shortname = 'dreamans';
+    var disqus_identifier = 'http://dreamans.com/post/7.html';
+    var disqus_url = 'http://dreamans.com/post/7.html';
+    var disqus_script = 'embed.js';
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+      <footer>
+      <p><small>Powered on <a href="https://pages.github.com">GitHub Pages</a> Copyright &copy; <a href="http://dreamans.com">dreamans</a></small></p>
+      </footer>
+    </div>
+  <div style="display:none"><script language="javascript" src="../javascripts/tj.js"></script></div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+  </body>
+</html>
